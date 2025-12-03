@@ -8,42 +8,68 @@ namespace AOC2025.Day01
         {
             var input = File.ReadAllLines(@"Day01\input.txt");
 
-            var leftList = new List<int>();
-            var rightList = new List<int>();
-
-            foreach (var s in input)
-            {
-                var n = s.Split("   ");
-                leftList.Add(int.Parse(n[0]));
-                rightList.Add(int.Parse(n[1]));
-            }
 
             var stopwatch = Stopwatch.StartNew();
-            PartOne(leftList, rightList);
+            PartOne(input);
             stopwatch.Stop();
             Console.WriteLine($"PartOne execution time: {stopwatch.Elapsed.TotalMilliseconds} ms");
 
             stopwatch = Stopwatch.StartNew();
-            PartTwo(leftList, rightList);
+            PartTwo(input);
             stopwatch.Stop();
             Console.WriteLine($"PartTwo execution time: {stopwatch.Elapsed.TotalMilliseconds} ms");
         }
 
-        private static void PartTwo(List<int> leftList, List<int> rightList)
+        private static void PartOne(string[] input)
         {
-            var sum = leftList.Sum(i => rightList.Count(t => t == i) * i);
+            var i = 50;
+            var zeroed = 0;
 
-            Console.WriteLine(sum);
+            foreach (var line in input)
+            {
+                i += line[0] == 'R' ? int.Parse(line[1..]) : -int.Parse(line[1..]);
+
+                if (i % 100 == 0)
+                    zeroed++;
+            }
+
+            Console.WriteLine($"Part One Result: {zeroed}");
         }
 
-        private static void PartOne(List<int> leftList, List<int> rightList)
+        private static void PartTwo(string[] input)
         {
-            leftList.Sort();
-            rightList.Sort();
+            var i = 50;
+            var zeroed = 0;
 
-            var sum = leftList.Select((t, i) => t >= rightList[i] ? t - rightList[i] : rightList[i] - t).Sum();
+            foreach (var line in input)
+            {
+                var old = i;
 
-            Console.WriteLine(sum);
+                var m = int.Parse(line[1..]);
+                zeroed += m / 100;
+                m %= 100;
+
+                i += line[0] == 'R' ? m : -m;
+
+                if (i % 100 == 0 || (old < 0 && i > 0) || (old > 0 && i < 0) || (old < 100 && i > 100) || (old > 100 && i < 100))
+                {
+                    zeroed++;
+                }
+
+                switch (i)
+                {
+                    case < 0:
+                        i += 100;
+                        break;
+                    case > 99:
+                        i -= 100;
+                        break;
+                }
+                
+                //Console.WriteLine($"old: {old}, i: {i}, zeroed: {zeroed}");
+            }
+
+            Console.WriteLine($"Part Two Result: {zeroed}");
         }
     }
 }
