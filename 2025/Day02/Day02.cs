@@ -62,15 +62,9 @@ namespace AOC2025.Day02
 
                     var delitele = VlastniDelitele(s.Length);
 
-                    foreach (var delitel in delitele)
+                    if (delitele.Select(delitel => SplitStringByNumberOfChars(s, delitel)).Any(l => l.Distinct().Count() <= 1))
                     {
-                        var l = SplitStringByNumberOfChars(s, delitel);
-                        if (l.Distinct().Count() <= 1)
-                        {
-                            //Console.WriteLine(i);
-                            sum += i;
-                            break;
-                        }
+                        sum += i;
                     }
                 }
             }
