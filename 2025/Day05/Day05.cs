@@ -27,7 +27,7 @@ namespace AOC2025.Day05
             var secondHalf = false;
 
             //read all ranges and ids
-            var ranges = new List<LongRange>();
+            var ranges = new List<Interval>();
             var ids = new List<long>();
 
             foreach (var line in input)
@@ -46,7 +46,7 @@ namespace AOC2025.Day05
                         long.TryParse(parts[0], out var from) &&
                         long.TryParse(parts[1], out var to))
                     {
-                        ranges.Add(new LongRange(from, to));
+                        ranges.Add(new Interval(from, to));
                     }
                 }
                 else
@@ -59,16 +59,86 @@ namespace AOC2025.Day05
                 }
             }
 
-            var l = new List<long>();
-            foreach (var r in ranges) {
-                for (var i = r.From; i <= r.To; i++) {
-                    if (!l.Contains(i))
-                        l.Add(i);
-                }
+            var intervals = new List<Interval>();
+
+            foreach (var r in ranges) 
+            {
+                InsertInterval(intervals, r.Start, r.End);
             }
 
-            Console.WriteLine($"Part Two: {l.Count}");
+            var sum = intervals.Sum(interval => (interval.End - interval.Start + 1));
+
+            Console.WriteLine($"Part Two: {sum}");
         }
+
+        public class Interval
+        {
+            public long Start { get; set; }
+            public long End { get; set; }
+
+            public Interval(long start, long end)
+            {
+                if (start > end)
+                    throw new ArgumentException("Start must be <= End");
+
+                Start = start;
+                End = end;
+            }
+
+            public override string ToString() => $"[{Start}, {End}]";
+        }
+
+
+        public static void InsertInterval(List<Interval> intervals, long newStart, long newEnd)
+        {
+            if (newStart > newEnd)
+                throw new ArgumentException("newStart must be <= newEnd");
+
+            long mergedStart = newStart;
+            long mergedEnd = newEnd;
+
+            // Sem si budeme pamatovat, kam nový/rozšířený interval vložíme
+            int insertIndex = 0;
+
+            // Projdeme seznam a najdeme všechny intervaly, které se
+            // s novým intervalem překrývají nebo s ním sousedí.
+            for (int i = 0; i < intervals.Count;)
+            {
+                var current = intervals[i];
+
+                // 1) Aktuální interval je úplně vpravo, bez dotyku
+                //    [mergedStart, mergedEnd] ... [current.Start, current.End]
+                if (current.Start > mergedEnd + 1)
+                {
+                    // Už jsme za všemi, kterých se to týká → skončíme cyklus.
+                    insertIndex = i;
+                    break;
+                }
+
+                // 2) Aktuální interval je úplně vlevo, bez dotyku
+                //    [current.Start, current.End] ... [mergedStart, mergedEnd]
+                if (current.End < mergedStart - 1)
+                {
+                    // Tento interval necháme být, jdeme dál.
+                    insertIndex = i + 1;
+                    i++;
+                    continue;
+                }
+
+                // 3) Jinak se buď překrývá, je uvnitř, nebo sousedí zleva/zprava:
+                //    sloučíme ho do merged intervalu.
+                mergedStart = Math.Min(mergedStart, current.Start);
+                mergedEnd = Math.Max(mergedEnd, current.End);
+
+                // Odebereme current, protože bude „pohlcen“ merged intervalem.
+                intervals.RemoveAt(i);
+                // Neinkrementujeme i, protože se seznam zkrátil, na tomto indexu je nový prvek
+            }
+
+            // Vložíme výsledný merged interval na správnou pozici
+            intervals.Insert(insertIndex, new Interval(mergedStart, mergedEnd));
+        }
+
 
         private static void PartOne(string[] input)
         {
