@@ -183,7 +183,7 @@ namespace AOC2025.Day06
             var columnTokens = new List<Token>();
             foreach (var row in rowsOfTokens)
             {
-                int index = row.Count - 1 - colIndexFromRight;
+                var index = row.Count - 1 - colIndexFromRight;
                 if (index >= 0 && index < row.Count)
                 {
                     columnTokens.Add(row[index]);
@@ -195,10 +195,10 @@ namespace AOC2025.Day06
             // 3. Detekce zarovnání (Klíčová část pro váš výsledek)
             // Pokud mají všechna čísla stejný StartIndex -> Left Aligned (např. poslední sloupec ve vašem příkladu)
             // Pokud mají všechna čísla stejný EndIndex -> Right Aligned (např. předposlední sloupec)
-            Alignment align = DetectAlignment(columnTokens);
+            var align = DetectAlignment(columnTokens);
 
             // 4. Normalizace délek (padding)
-            int maxLen = columnTokens.Max(t => t.Text.Length);
+            var maxLen = columnTokens.Max(t => t.Text.Length);
             var paddedStrings = columnTokens.Select(t =>
                 align == Alignment.Right
                     ? t.Text.PadLeft(maxLen, ' ')
@@ -209,12 +209,12 @@ namespace AOC2025.Day06
             var results = new List<int>();
 
             // Iterujeme sloupce znaků od posledního (vpravo) k prvnímu (vlevo)
-            for (int charCol = maxLen - 1; charCol >= 0; charCol--)
+            for (var charCol = maxLen - 1; charCol >= 0; charCol--)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 foreach (var str in paddedStrings)
                 {
-                    char c = str[charCol];
+                    var c = str[charCol];
                     if (c != ' ') // Ignorujeme mezery vzniklé paddingem
                     {
                         sb.Append(c);

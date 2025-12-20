@@ -94,15 +94,15 @@ namespace AOC2025.Day05
             if (newStart > newEnd)
                 throw new ArgumentException("newStart must be <= newEnd");
 
-            long mergedStart = newStart;
-            long mergedEnd = newEnd;
+            var mergedStart = newStart;
+            var mergedEnd = newEnd;
 
             // Sem si budeme pamatovat, kam nový/rozšířený interval vložíme
-            int insertIndex = 0;
+            var insertIndex = 0;
 
             // Projdeme seznam a najdeme všechny intervaly, které se
             // s novým intervalem překrývají nebo s ním sousedí.
-            for (int i = 0; i < intervals.Count;)
+            for (var i = 0; i < intervals.Count;)
             {
                 var current = intervals[i];
 
